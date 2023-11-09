@@ -1,4 +1,4 @@
-async function trainModel(X, Y, window_size, n_epochs, learning_rate, n_layers){
+async function trainModel(X, Y, window_size, n_epochs, learning_rate, n_layers, callback){
 
     const batch_size = 32;
   
@@ -56,7 +56,12 @@ async function trainModel(X, Y, window_size, n_epochs, learning_rate, n_layers){
     // ## fit model
   
     const hist = await model.fit(xs, ys,
-      { batchSize: batch_size, epochs: n_epochs});
+      { batchSize: batch_size, epochs: n_epochs, callbacks: {
+        onEpochEnd: async (epoch, log) => {
+          callback(epoch, log);
+        }
+      }
+    });
   
     // return { model: model, stats: hist };
     return { model: model, stats: hist, normalize: {inputMax:inputMax, inputMin:inputMin, labelMax:labelMax, labelMin:labelMin} };
